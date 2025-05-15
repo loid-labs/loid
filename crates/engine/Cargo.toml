@@ -1,0 +1,10 @@
+[package]
+name = "loid-engine"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tokio.workspace = true
+tonic.workspace = true
+loid-networking.workspace = true
+tracing.workspace = true

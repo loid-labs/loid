@@ -1,0 +1,20 @@
+[package]
+name = "loid-cli"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]
+tokio.workspace = true
+loid-networking.workspace = true
+tonic.workspace = true
+anyhow.workspace = true
+clap.workspace = true
+tracing.workspace = true
+console.workspace = true
+
+
+[[bin]]
+name = "loid"
+path = "src/main.rs"

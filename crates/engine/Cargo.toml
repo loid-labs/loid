@@ -1,10 +1,21 @@
 [package]
 name = "loid-engine"
-version = "0.1.0"
-edition = "2024"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+repository.workspace = true
 
 [dependencies]
+# Core dependencies
 tokio.workspace = true
-tonic.workspace = true
-loid-networking.workspace = true
 tracing.workspace = true
+anyhow.workspace = true
+serde.workspace = true
+serde_yaml.workspace = true
+async-trait.workspace = true
+# Utilities
+uuid.workspace = true
+chrono.workspace = true
+
+# Persistence crate for models and repositories
+loid-persistence.workspace = true

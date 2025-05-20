@@ -8,4 +8,7 @@ repository.workspace = true
 [dependencies]
 tokio.workspace = true
 loid-networking.workspace = true
+loid-persistence.workspace = true
+loid-engine.workspace = true
+tonic.workspace = true
 tracing.workspace = true

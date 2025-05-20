@@ -8,6 +8,10 @@ repository.workspace = true
 [dependencies]
 tonic.workspace = true
 prost.workspace = true
+anyhow.workspace = true
+uuid.workspace = true
+loid-persistence.workspace = true
+loid-engine.workspace = true
 
 [build-dependencies]
 tonic-build.workspace = true

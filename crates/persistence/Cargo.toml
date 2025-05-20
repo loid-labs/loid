@@ -1,0 +1,8 @@
+[package]
+name = "loid-persistence"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+repository.workspace = true
+
+[dependencies]

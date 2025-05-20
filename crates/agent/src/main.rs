@@ -1,11 +1,16 @@
-use loid_networking::proto::calculator_client::CalculatorClient;
+use loid_networking::CalculatorService;
+use loid_networking::calculator_proto::calculator_server::CalculatorServer;
+use tonic::transport::Server;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let url = "http://[::1]:50051";
-    let mut client = CalculatorClient::connect(url).await?;
-    let req = loid_networking::proto::CalculationRequest { a: 1, b: 2 };
-    let res = client.add(req).await?;
-    println!("{:?}", res);
+    let addr = "[::1]:50051".parse().unwrap();
+
+    let calculator_service = CalculatorService::default();
+
+    let svc = CalculatorServer::new(calculator_service);
+
+    Server::builder().add_service(svc).serve(addr).await?;
+
     Ok(())
 }

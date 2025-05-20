@@ -1,8 +1,8 @@
-use crate::proto::{CalculationRequest, CalculationResponse};
-use proto::calculator_server::Calculator;
+use crate::calculator_proto::calculator_server::Calculator;
+use crate::calculator_proto::{CalculationRequest, CalculationResponse};
 use tonic::{Request, Response, Status};
 
-pub mod proto {
+pub mod calculator_proto {
     tonic::include_proto!("calculator");
 }
 

@@ -4,20 +4,25 @@ layout: home
 
 hero:
   name: "loid"
-  text: "A VitePress Site"
-  tagline: My great project tagline
+  text: "Agentic AI Automation Platform"
+  tagline: "Automate business processes within Minutes."
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: What is loid
+      link: /guide/idea
     - theme: alt
-      text: API Examples
-      link: /api-examples
+      text: Quickstart
+      link: /guide/getting-started
+    - theme: alt
+      text: GitHub
+      link: https://github.com/loid-labs/loid
 
 features:
-  - title: Feature A
+  - icon: 🧠
+    title: Write less, see more done
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
+  - icon: 🚀
+    title: Automate within Minutes
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
   - title: Feature C
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit

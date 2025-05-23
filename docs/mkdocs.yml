@@ -1,0 +1,96 @@
+site_name: loid
+site_description: The Neural Automation Framework
+
+repo_name: loid-labs/loid
+repo_url: https://github.com/loid-labs/loid
+
+docs_dir: src
+
+extra_css:
+  - static/stylesheets/extra.css
+
+theme:
+  name: material
+  custom_dir: overrides
+  icon:
+    repo: fontawesome/brands/github
+  language: en
+  features:
+    - announce.dismiss
+    - content.action.edit
+    - content.action.view
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.tooltips
+    - navigation.footer
+    - navigation.indexes
+    - navigation.path
+    - navigation.tabs
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - search.highlight
+    - search.share
+    - search.suggest
+    - toc.follow
+  palette:
+    # Palette toggle for dark mode
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: black
+      toggle:
+        icon: material/weather-night
+        name: Switch to light mode
+
+    # Palette toggle for light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: black
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to dark mode
+
+markdown_extensions:
+  - admonition:
+  - attr_list:
+  - md_in_html:
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.details:
+  - pymdownx.inlinehilite:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.extra:
+  - pymdownx.snippets:
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tabbed:
+      alternate_style: true
+  - toc:
+      permalink: true
+
+plugins:
+  - search:
+  - git-authors:
+  - git-revision-date-localized:
+  - awesome-pages:
+  - tags:
+  - blog:
+  - minify_html:
+
+extra:
+  version:
+    provider: mike
+    alias: true
+  social:
+    - icon: simple/github
+      link: https://github.com/loid-labs/loid

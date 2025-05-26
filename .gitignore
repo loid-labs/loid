@@ -101,3 +101,5 @@ fabric.properties
 
 docs/.vitepress/dist
 docs/.vitepress/cache
+docs/.venv
+docs/env

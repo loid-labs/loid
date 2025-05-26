@@ -3,5 +3,6 @@ nav:
     - guide
     - concepts
     - examples
+    - internals
     - blog
     - roadmap.md

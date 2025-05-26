@@ -9,6 +9,7 @@ docs_dir: src
 extra_css:
   - static/stylesheets/extra.css
 
+
 theme:
   name: material
   custom_dir: overrides
@@ -60,6 +61,7 @@ markdown_extensions:
       emoji_generator: !!python/name:material.extensions.emoji.to_svg
   - pymdownx.details:
   - pymdownx.inlinehilite:
+  - pymdownx.keys:
   - pymdownx.highlight:
       anchor_linenums: true
       line_spans: __span
@@ -69,7 +71,6 @@ markdown_extensions:
         - name: mermaid
           class: mermaid
           format: !!python/name:pymdownx.superfences.fence_code_format
-  - pymdownx.extra:
   - pymdownx.snippets:
   - pymdownx.tasklist:
       custom_checkbox: true
@@ -88,9 +89,6 @@ plugins:
   - minify_html:
 
 extra:
-  version:
-    provider: mike
-    alias: true
   social:
     - icon: simple/github
       link: https://github.com/loid-labs/loid

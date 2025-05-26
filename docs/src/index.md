@@ -1,6 +1,8 @@
 ---
 hide:
+
 - navigation
+
 ---
 
 # Loid
@@ -20,7 +22,9 @@ hide:
 
 ---
 
-loid is an automation platform of the next generation. In a nutshell, loid functions like a digital nervous system - receiving events from various sources, analyzing them through modular components, and orchestrating the optimal solution without human intervention.
+loid is an automation platform of the next generation. In a nutshell, loid functions like a digital nervous system -
+receiving events from various sources, analyzing them through modular components, and orchestrating the optimal solution
+without human intervention.
 
 [What is loid?](guide/idea.md){ .md-button .md-button--primary }
 [Quickstart](guide/getting-started.md){ .md-button }

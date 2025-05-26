@@ -30,18 +30,18 @@ execution:
         -   action: fulfill
             goal: verify_server_status
             condition: true
-
+        
         # Set appropriate next goal based on result
         -   action: set
             goal: restart_server
-            condition: ${server_status == "down"}
+            condition: "${server_status == "
             priority: 20
             metadata:
                 reason: "Server ${server_ip} is unreachable, needs to be restored"
 
         -   action: set
             goal: resolve_alert
-            condition: ${server_status == "up"}
+            condition: "${server_status == "
             priority: 30
             context:
                 $set:

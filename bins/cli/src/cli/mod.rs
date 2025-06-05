@@ -1,14 +1,14 @@
 mod add;
 mod command;
 mod context;
-pub mod result;
 mod info;
+pub mod result;
 
 use crate::cli::add::Add;
 use crate::cli::command::Command;
 use crate::cli::context::Context;
-use crate::cli::result::CliResult;
 use crate::cli::info::Info;
+use crate::cli::result::CliResult;
 use clap::{Parser, Subcommand};
 use std::process::ExitCode;
 use tracing::instrument;

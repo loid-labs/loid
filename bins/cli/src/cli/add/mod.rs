@@ -2,8 +2,8 @@ use crate::cli::command::Command;
 use crate::cli::context::Context;
 use crate::cli::result::{CliResult, ExitStatus};
 use clap::Parser;
-use loid_transport::calculator_proto::calculator_client::CalculatorClient;
 use loid_transport::calculator_proto::CalculationRequest;
+use loid_transport::calculator_proto::calculator_client::CalculatorClient;
 
 /// This struct represents the `add` cli arguments
 #[derive(Debug, Parser, PartialEq, Eq)]

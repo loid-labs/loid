@@ -6,3 +6,5 @@ authors.workspace = true
 repository.workspace = true
 
 [dependencies]
+uuid.workspace = true
+chrono.workspace = true

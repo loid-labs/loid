@@ -2,9 +2,9 @@
 members = [
     "crates/engine",
     "crates/cli",
-    "crates/networking",
+    "crates/transport",
     "crates/agent",
-    "crates/persistence",
+    "crates/sensors", "crates/neurons", "crates/resources", "crates/conductor",
 ]
 resolver = "2"
 
@@ -21,14 +21,8 @@ tonic-build = "0.13.1"
 prost = "0.13.5"
 tracing = "0.1.40"
 anyhow = "1.0.98"
-uuid = { version = "1.16.0", features = ["v4", "serde"] }
-serde = { version = "1.0", features = ["derive"] }
-serde_yaml = "0.9"
 clap = { version = "4.5.38", features = ["default", "derive"] }
 console = "0.15.11"
-chrono = { version = "0.4", features = ["serde"] }
-async-trait = "0.1.88"
 
-loid-networking = { path = "crates/networking" }
-loid-persistence = { path = "crates/persistence" }
+loid-transport = { path = "crates/transport" }
 loid-engine = { path = "crates/engine" }

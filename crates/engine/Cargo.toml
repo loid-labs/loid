@@ -6,16 +6,3 @@ authors.workspace = true
 repository.workspace = true
 
 [dependencies]
-# Core dependencies
-tokio.workspace = true
-tracing.workspace = true
-anyhow.workspace = true
-serde.workspace = true
-serde_yaml.workspace = true
-async-trait.workspace = true
-# Utilities
-uuid.workspace = true
-chrono.workspace = true
-
-# Persistence crate for models and repositories
-loid-persistence.workspace = true

@@ -1,11 +1,8 @@
 [package]
-name = "loid-agent"
+name = "conductor"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true
 repository.workspace = true
 
 [dependencies]
-tokio.workspace = true
-loid-transport.workspace = true
-tonic.workspace = true

@@ -2,11 +2,13 @@ mod add;
 mod command;
 mod context;
 pub mod result;
+mod info;
 
 use crate::cli::add::Add;
 use crate::cli::command::Command;
 use crate::cli::context::Context;
 use crate::cli::result::CliResult;
+use crate::cli::info::Info;
 use clap::{Parser, Subcommand};
 use std::process::ExitCode;
 use tracing::instrument;
@@ -16,6 +18,8 @@ use tracing::instrument;
 pub enum Commands {
     /// Add a new dependency to the project.
     Add(Add),
+    /// Print Information about the cli and connected engine
+    Info(Info),
 }
 
 #[derive(Debug, Parser, PartialEq, Eq)]
@@ -39,6 +43,7 @@ impl Command for Cli {
         // println!("{:?}", context);
         match &self.command {
             Commands::Add(options) => options.execute(context).await,
+            Commands::Info(options) => options.execute(context).await,
         }
     }
 }

@@ -7,7 +7,7 @@ repository.workspace = true
 
 [dependencies]
 tokio.workspace = true
-loid-networking.workspace = true
+loid-transport.workspace = true
 tonic.workspace = true
 anyhow.workspace = true
 clap.workspace = true

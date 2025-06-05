@@ -2,3 +2,5 @@ nav:
     - sensors.md
     - neurons.md
     - resources.md
+    - agents.md
+    - conductor.md

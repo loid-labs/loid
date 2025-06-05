@@ -1,5 +1,5 @@
 [package]
-name = "loid-persistence"
+name = "sensors"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true

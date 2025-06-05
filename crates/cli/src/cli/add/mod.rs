@@ -2,7 +2,8 @@ use crate::cli::command::Command;
 use crate::cli::context::Context;
 use crate::cli::result::{CliResult, ExitStatus};
 use clap::Parser;
-use loid_networking::calculator_proto::calculator_client::CalculatorClient;
+use loid_transport::calculator_proto::calculator_client::CalculatorClient;
+use loid_transport::calculator_proto::CalculationRequest;
 
 /// This struct represents the `add` cli arguments
 #[derive(Debug, Parser, PartialEq, Eq)]
@@ -17,7 +18,7 @@ pub struct Add {
 impl Command for Add {
     async fn execute(&self, context: &Context) -> CliResult {
         let mut client = CalculatorClient::connect(context.api_url.clone()).await?;
-        let req = loid_networking::calculator_proto::CalculationRequest {
+        let req = CalculationRequest {
             a: self.a,
             b: self.b,
         };

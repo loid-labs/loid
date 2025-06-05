@@ -1,6 +1,6 @@
 build:
     cargo build --all
-    cargo install --path crates/cli
+    cargo install --path bins/cli
 
 test:
     cargo test

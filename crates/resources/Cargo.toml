@@ -1,5 +1,5 @@
 [package]
-name = "resources"
+name = "loid-resources"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true

@@ -1,10 +1,14 @@
 [workspace]
 members = [
+    "bins/cli",
+    "bins/agent",
+    "bins/conductor",
     "crates/engine",
-    "crates/cli",
     "crates/transport",
-    "crates/agent",
-    "crates/sensors", "crates/neurons", "crates/resources", "crates/conductor",
+    "crates/sensors",
+    "crates/neurons",
+    "crates/resources",
+    "crates/events",
 ]
 resolver = "2"
 
@@ -24,5 +28,9 @@ anyhow = "1.0.98"
 clap = { version = "4.5.38", features = ["default", "derive"] }
 console = "0.15.11"
 
-loid-transport = { path = "crates/transport" }
 loid-engine = { path = "crates/engine" }
+loid-transport = { path = "crates/transport" }
+loid-sensors = { path = "crates/sensors" }
+loid-neurons = { path = "crates/neurons" }
+loid-resources = { path = "crates/resources" }
+loid-events = { path = "crates/events" }

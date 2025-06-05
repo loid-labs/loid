@@ -1,3 +1,3 @@
 # Agents
 
-Agents have different nodes assigned and can run them.
+Agents have different neurons assigned to them and run on nodes.

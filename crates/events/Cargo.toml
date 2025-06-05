@@ -1,5 +1,5 @@
 [package]
-name = "loid-sensors"
+name = "loid-events"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true

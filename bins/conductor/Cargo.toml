@@ -1,5 +1,5 @@
 [package]
-name = "conductor"
+name = "loid-conductor"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true

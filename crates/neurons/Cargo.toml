@@ -1,5 +1,5 @@
 [package]
-name = "neurons"
+name = "loid-neurons"
 version.workspace = true
 edition.workspace = true
 authors.workspace = true

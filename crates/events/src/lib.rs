@@ -3,6 +3,34 @@ use std::collections::HashMap;
 use std::str::FromStr;
 use uuid::{NoContext, Timestamp, Uuid};
 
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Default)]
+pub enum Impact {
+    #[default]
+    NEGLIGIBLE,
+    MINOR,
+    MODERATE,
+    SIGNIFICANT,
+    SEVERE,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Default)]
+pub enum Urgency {
+    #[default]
+    LOW,
+    MEDIUM,
+    HIGH,
+    CRITICAL,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Default)]
+pub enum Priority {
+    #[default]
+    LOW,
+    MEDIUM,
+    HIGH,
+    CRITICAL,
+}
+
 #[derive(Debug, Clone, Default)]
 pub struct Source {
     pub system: String,
@@ -27,7 +55,13 @@ pub struct Event {
     pub correlation_id: Option<Uuid>,
     pub source: Source,
 
-    pub timestamp: DateTime<Utc>,
+    pub impact: Impact,
+    pub priority: Priority,
+    pub urgency: Urgency,
+
+    pub received_at: DateTime<Utc>,
+    pub created_at: DateTime<Utc>,
+    pub resolved_at: Option<DateTime<Utc>>,
 
     pub fields: HashMap<String, Value>,
 }
@@ -36,6 +70,10 @@ pub struct EventBuilder {
     correlation_id: Option<Uuid>,
     source: Source,
     fields: HashMap<String, Value>,
+    priority: Priority,
+    impact: Impact,
+    urgency: Urgency,
+    received_at: Option<DateTime<Utc>>,
 }
 
 impl EventBuilder {
@@ -44,6 +82,10 @@ impl EventBuilder {
             correlation_id: None,
             source: source,
             fields: HashMap::new(),
+            priority: Priority::default(),
+            impact: Impact::default(),
+            urgency: Urgency::default(),
+            received_at: None,
         }
     }
 
@@ -54,6 +96,21 @@ impl EventBuilder {
 
     pub fn with_source(mut self, source: Source) -> Self {
         self.source = source;
+        self
+    }
+
+    pub fn with_priority(mut self, priority: Priority) -> Self {
+        self.priority = priority;
+        self
+    }
+
+    pub fn with_impact(mut self, impact: Impact) -> Self {
+        self.impact = impact;
+        self
+    }
+
+    pub fn with_urgency(mut self, urgency: Urgency) -> Self {
+        self.urgency = urgency;
         self
     }
 
@@ -93,12 +150,18 @@ impl EventBuilder {
             now.timestamp() as u64,
             now.timestamp_subsec_nanos(),
         ));
+        let received_at = self.received_at.unwrap_or(now);
         Event {
             id: event_id,
             correlation_id: self.correlation_id,
             source: self.source,
-            timestamp: now,
+            created_at: now,
+            received_at,
             fields: self.fields,
+            priority: self.priority,
+            impact: self.impact,
+            urgency: self.urgency,
+            resolved_at: None,
         }
     }
 }
@@ -154,6 +217,104 @@ mod tests {
     use std::str::FromStr;
     use uuid::Uuid;
 
+    // ========== Impact Tests ==========
+    #[test]
+    fn test_impact_default() {
+        let impact = Impact::default();
+        assert_eq!(impact, Impact::NEGLIGIBLE);
+    }
+
+    #[test]
+    fn test_impact_variants() {
+        assert_eq!(Impact::NEGLIGIBLE, Impact::NEGLIGIBLE);
+        assert_eq!(Impact::MINOR, Impact::MINOR);
+        assert_eq!(Impact::MODERATE, Impact::MODERATE);
+        assert_eq!(Impact::SIGNIFICANT, Impact::SIGNIFICANT);
+        assert_eq!(Impact::SEVERE, Impact::SEVERE);
+    }
+
+    #[test]
+    fn test_impact_clone_copy() {
+        let impact = Impact::SEVERE;
+        let cloned = impact.clone();
+        let copied = impact;
+
+        assert_eq!(impact, cloned);
+        assert_eq!(impact, copied);
+    }
+
+    #[test]
+    fn test_impact_debug() {
+        let impact = Impact::MODERATE;
+        let debug_str = format!("{:?}", impact);
+        assert_eq!(debug_str, "MODERATE");
+    }
+
+    // ========== Urgency Tests ==========
+    #[test]
+    fn test_urgency_default() {
+        let urgency = Urgency::default();
+        assert_eq!(urgency, Urgency::LOW);
+    }
+
+    #[test]
+    fn test_urgency_variants() {
+        assert_eq!(Urgency::LOW, Urgency::LOW);
+        assert_eq!(Urgency::MEDIUM, Urgency::MEDIUM);
+        assert_eq!(Urgency::HIGH, Urgency::HIGH);
+        assert_eq!(Urgency::CRITICAL, Urgency::CRITICAL);
+    }
+
+    #[test]
+    fn test_urgency_clone_copy() {
+        let urgency = Urgency::CRITICAL;
+        let cloned = urgency.clone();
+        let copied = urgency;
+
+        assert_eq!(urgency, cloned);
+        assert_eq!(urgency, copied);
+    }
+
+    #[test]
+    fn test_urgency_debug() {
+        let urgency = Urgency::HIGH;
+        let debug_str = format!("{:?}", urgency);
+        assert_eq!(debug_str, "HIGH");
+    }
+
+    // ========== Priority Tests ==========
+    #[test]
+    fn test_priority_default() {
+        let priority = Priority::default();
+        assert_eq!(priority, Priority::LOW);
+    }
+
+    #[test]
+    fn test_priority_variants() {
+        assert_eq!(Priority::LOW, Priority::LOW);
+        assert_eq!(Priority::MEDIUM, Priority::MEDIUM);
+        assert_eq!(Priority::HIGH, Priority::HIGH);
+        assert_eq!(Priority::CRITICAL, Priority::CRITICAL);
+    }
+
+    #[test]
+    fn test_priority_clone_copy() {
+        let priority = Priority::CRITICAL;
+        let cloned = priority.clone();
+        let copied = priority;
+
+        assert_eq!(priority, cloned);
+        assert_eq!(priority, copied);
+    }
+
+    #[test]
+    fn test_priority_debug() {
+        let priority = Priority::MEDIUM;
+        let debug_str = format!("{:?}", priority);
+        assert_eq!(debug_str, "MEDIUM");
+    }
+
+    // ========== Source Tests ==========
     #[test]
     fn test_source_default() {
         let source = Source::default();
@@ -182,6 +343,7 @@ mod tests {
         assert_eq!(source.source_id, cloned.source_id);
     }
 
+    // ========== Value Tests ==========
     #[test]
     fn test_value_default() {
         let value = Value::default();
@@ -214,16 +376,16 @@ mod tests {
     fn test_value_clone() {
         let original = Value::String("test".to_string());
         let cloned = original.clone();
-        matches!(cloned, Value::String(ref s) if s == "test");
+        matches!(cloned, Value::String(s) if s == "test");
     }
 
     #[test]
     fn test_value_from_string() {
         let value: Value = "test".into();
-        matches!(value, Value::String(ref s) if s == "test");
+        matches!(value, Value::String(s) if s == "test");
 
         let value: Value = String::from("test").into();
-        matches!(value, Value::String(ref s) if s == "test");
+        matches!(value, Value::String(s) if s == "test");
     }
 
     #[test]
@@ -249,9 +411,10 @@ mod tests {
     #[test]
     fn test_value_from_str() {
         let value = Value::from_str("test").unwrap();
-        matches!(value, Value::String(ref s) if s == "test");
+        matches!(value, Value::String(s) if s == "test");
     }
 
+    // ========== EventBuilder Tests ==========
     #[test]
     fn test_event_builder_new() {
         let source = Source {
@@ -264,6 +427,11 @@ mod tests {
         let event = builder.build();
         assert_eq!(event.source.system, "test_system");
         assert_eq!(event.source.source_id, None);
+
+        // Test default values
+        assert_eq!(event.impact, Impact::NEGLIGIBLE);
+        assert_eq!(event.urgency, Urgency::LOW);
+        assert_eq!(event.priority, Priority::LOW);
     }
 
     #[test]
@@ -307,6 +475,54 @@ mod tests {
     }
 
     #[test]
+    fn test_event_builder_with_priority() {
+        let source = Source::default();
+
+        let event = EventBuilder::new(source)
+            .with_priority(Priority::CRITICAL)
+            .build();
+
+        assert_eq!(event.priority, Priority::CRITICAL);
+    }
+
+    #[test]
+    fn test_event_builder_with_impact() {
+        let source = Source::default();
+
+        let event = EventBuilder::new(source)
+            .with_impact(Impact::SEVERE)
+            .build();
+
+        assert_eq!(event.impact, Impact::SEVERE);
+    }
+
+    #[test]
+    fn test_event_builder_with_urgency() {
+        let source = Source::default();
+
+        let event = EventBuilder::new(source)
+            .with_urgency(Urgency::CRITICAL)
+            .build();
+
+        assert_eq!(event.urgency, Urgency::CRITICAL);
+    }
+
+    #[test]
+    fn test_event_builder_with_all_priority_fields() {
+        let source = Source::default();
+
+        let event = EventBuilder::new(source)
+            .with_impact(Impact::SIGNIFICANT)
+            .with_urgency(Urgency::HIGH)
+            .with_priority(Priority::MEDIUM)
+            .build();
+
+        assert_eq!(event.impact, Impact::SIGNIFICANT);
+        assert_eq!(event.urgency, Urgency::HIGH);
+        assert_eq!(event.priority, Priority::MEDIUM);
+    }
+
+    #[test]
     fn test_event_builder_with_field() {
         let source = Source::default();
         let value = Value::String("test_value".to_string());
@@ -347,7 +563,7 @@ mod tests {
             .with_float_field("score", 95.5)
             .build();
 
-        matches!(event.fields.get("score"), Some(Value::Float(f)) if (f - 95.5).abs() < f64::EPSILON);
+        matches!(event.fields.get("score"), Some(Value::Float(95.5)));
     }
 
     #[test]
@@ -399,6 +615,9 @@ mod tests {
 
         let event = EventBuilder::new(source)
             .with_correlation_id(correlation_id)
+            .with_impact(Impact::MODERATE)
+            .with_urgency(Urgency::HIGH)
+            .with_priority(Priority::CRITICAL)
             .with_text_field("user", "alice")
             .with_int_field("count", 42)
             .with_bool_field("success", true)
@@ -406,6 +625,9 @@ mod tests {
 
         assert_eq!(event.correlation_id, Some(correlation_id));
         assert_eq!(event.source.system, "test_system");
+        assert_eq!(event.impact, Impact::MODERATE);
+        assert_eq!(event.urgency, Urgency::HIGH);
+        assert_eq!(event.priority, Priority::CRITICAL);
         assert_eq!(event.fields.len(), 3);
 
         matches!(event.fields.get("user"), Some(Value::String(s)) if s == "alice");
@@ -413,6 +635,7 @@ mod tests {
         matches!(event.fields.get("success"), Some(Value::Bool(true)));
     }
 
+    // ========== Event Tests ==========
     #[test]
     fn test_event_build_generates_unique_ids() {
         let source = Source::default();
@@ -424,16 +647,25 @@ mod tests {
     }
 
     #[test]
-    fn test_event_build_sets_timestamp() {
+    fn test_event_build_sets_timestamps() {
         let source = Source::default();
-        let before = chrono::Utc::now();
+        let before = Utc::now();
 
         let event = EventBuilder::new(source).build();
 
-        let after = chrono::Utc::now();
+        let after = Utc::now();
 
-        assert!(event.timestamp >= before);
-        assert!(event.timestamp <= after);
+        // Both created_at and received_at should be set
+        assert!(event.created_at >= before);
+        assert!(event.created_at <= after);
+        assert!(event.received_at >= before);
+        assert!(event.received_at <= after);
+
+        // By default, received_at should equal created_at
+        assert_eq!(event.created_at, event.received_at);
+
+        // resolved_at should be None initially
+        assert!(event.resolved_at.is_none());
     }
 
     #[test]
@@ -453,6 +685,9 @@ mod tests {
         };
 
         let original = EventBuilder::new(source)
+            .with_impact(Impact::SEVERE)
+            .with_urgency(Urgency::CRITICAL)
+            .with_priority(Priority::HIGH)
             .with_text_field("key", "value")
             .build();
 
@@ -462,8 +697,24 @@ mod tests {
         assert_eq!(original.correlation_id, cloned.correlation_id);
         assert_eq!(original.source.system, cloned.source.system);
         assert_eq!(original.source.source_id, cloned.source.source_id);
-        assert_eq!(original.timestamp, cloned.timestamp);
+        assert_eq!(original.impact, cloned.impact);
+        assert_eq!(original.urgency, cloned.urgency);
+        assert_eq!(original.priority, cloned.priority);
+        assert_eq!(original.created_at, cloned.created_at);
+        assert_eq!(original.received_at, cloned.received_at);
+        assert_eq!(original.resolved_at, cloned.resolved_at);
         assert_eq!(original.fields.len(), cloned.fields.len());
+    }
+
+    #[test]
+    fn test_event_default_priority_values() {
+        let source = Source::default();
+        let event = EventBuilder::new(source).build();
+
+        // Test that default values are set correctly
+        assert_eq!(event.impact, Impact::NEGLIGIBLE);
+        assert_eq!(event.urgency, Urgency::LOW);
+        assert_eq!(event.priority, Priority::LOW);
     }
 
     #[test]
@@ -491,10 +742,10 @@ mod tests {
 
         if let Some(Value::List(list)) = event.fields.get("complex_list") {
             assert_eq!(list.len(), 4);
-            matches!(list[0], Value::Int(1));
-            matches!(list[1], Value::String(ref s) if s == "text");
-            matches!(list[2], Value::Bool(true));
-            matches!(list[3], Value::Map(ref m) if m.len() == 1);
+            matches!(&list[0], Value::Int(1));
+            matches!(&list[1], Value::String(s) if s == "text");
+            matches!(&list[2], Value::Bool(true));
+            matches!(&list[3], Value::Map(m) if m.len() == 1);
         } else {
             panic!("Expected list field not found or wrong type");
         }
@@ -507,6 +758,7 @@ mod tests {
 
         assert!(event.fields.is_empty());
         assert!(event.correlation_id.is_none());
+        assert!(event.resolved_at.is_none());
     }
 
     #[test]
@@ -520,5 +772,65 @@ mod tests {
 
         matches!(event.fields.get("key"), Some(Value::String(s)) if s == "second_value");
         assert_eq!(event.fields.len(), 1);
+    }
+
+    #[test]
+    fn test_priority_enum_ordering() {
+        // Test that priorities can be compared
+        assert!(Priority::LOW < Priority::MEDIUM);
+        assert!(Priority::MEDIUM < Priority::HIGH);
+        assert!(Priority::HIGH < Priority::CRITICAL);
+
+        assert!(Impact::NEGLIGIBLE < Impact::MINOR);
+        assert!(Impact::MINOR < Impact::MODERATE);
+        assert!(Impact::MODERATE < Impact::SIGNIFICANT);
+        assert!(Impact::SIGNIFICANT < Impact::SEVERE);
+
+        assert!(Urgency::LOW < Urgency::MEDIUM);
+        assert!(Urgency::MEDIUM < Urgency::HIGH);
+        assert!(Urgency::HIGH < Urgency::CRITICAL);
+    }
+
+    #[test]
+    fn test_event_with_extreme_priority_combinations() {
+        let source = Source::default();
+
+        // Test maximum severity event
+        let critical_event = EventBuilder::new(source.clone())
+            .with_impact(Impact::SEVERE)
+            .with_urgency(Urgency::CRITICAL)
+            .with_priority(Priority::CRITICAL)
+            .with_text_field("severity", "maximum")
+            .build();
+
+        assert_eq!(critical_event.impact, Impact::SEVERE);
+        assert_eq!(critical_event.urgency, Urgency::CRITICAL);
+        assert_eq!(critical_event.priority, Priority::CRITICAL);
+
+        // Test minimum severity event
+        let minimal_event = EventBuilder::new(source)
+            .with_impact(Impact::NEGLIGIBLE)
+            .with_urgency(Urgency::LOW)
+            .with_priority(Priority::LOW)
+            .with_text_field("severity", "minimal")
+            .build();
+
+        assert_eq!(minimal_event.impact, Impact::NEGLIGIBLE);
+        assert_eq!(minimal_event.urgency, Urgency::LOW);
+        assert_eq!(minimal_event.priority, Priority::LOW);
+    }
+
+    #[test]
+    fn test_timestamp_relationships() {
+        let source = Source::default();
+        let event = EventBuilder::new(source).build();
+
+        // created_at and received_at should be very close or equal when built
+        let time_diff =
+            (event.created_at.timestamp_millis() - event.received_at.timestamp_millis()).abs();
+        assert!(time_diff <= 1); // Should be within 1ms
+
+        // resolved_at should be None for new events
+        assert!(event.resolved_at.is_none());
     }
 }

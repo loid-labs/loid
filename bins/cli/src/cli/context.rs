@@ -1,4 +1,4 @@
-use console::{Term, style};
+use console::{style, Term};
 use std::path::PathBuf;
 
 /// Represents the cli context for the application.

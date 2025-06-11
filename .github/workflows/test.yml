@@ -24,6 +24,69 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
+      # Cache Rust toolchain
+      - name: Cache Rust toolchain
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.rustup/toolchains
+            ~/.rustup/update-hashes
+            ~/.rustup/settings.toml
+          key: ${{ runner.os }}-rustup-${{ hashFiles('rust-toolchain.toml', 'rust-toolchain') }}
+          restore-keys: |
+            ${{ runner.os }}-rustup-
+
+      # Cache Cargo registry and git dependencies
+      - name: Cache Cargo registry
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry/index/
+            ~/.cargo/registry/cache/
+            ~/.cargo/git/db/
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-registry-
+
+      # Cache target directory (build artifacts)
+      - name: Cache target directory
+        uses: actions/cache@v4
+        with:
+          path: target/
+          key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('**/*.rs') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}-
+            ${{ runner.os }}-cargo-build-
+
+      # Cache installed cargo tools
+      - name: Cache cargo tools
+        uses: actions/cache@v4
+        id: cargo-tools-cache
+        with:
+          path: ~/.cargo/bin/
+          key: ${{ runner.os }}-cargo-tools-${{ hashFiles('**/Cargo.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-tools-
+
+      # Install llvm-tools-preview component (cached via rustup cache above)
+      - name: Install llvm-tools-preview
+        run: rustup component add llvm-tools-preview --toolchain stable-x86_64-unknown-linux-gnu
+
+      # Install cargo-llvm-cov only if not cached
+      - name: Install cargo-llvm-cov
+        if: steps.cargo-tools-cache.outputs.cache-hit != 'true'
+        run: cargo +stable install cargo-llvm-cov
+
+      # Cache DeepSource CLI
+      - name: Cache DeepSource CLI
+        uses: actions/cache@v4
+        id: deepsource-cache
+        with:
+          path: ./bin/deepsource
+          key: ${{ runner.os }}-deepsource-cli
+          restore-keys: |
+            ${{ runner.os }}-deepsource-cli
+
       # Run the cargo build command and output details with --verbose
       - name: Build
         run: cargo build --verbose
@@ -32,12 +95,9 @@ jobs:
       - name: Run tests
         run: cargo test --verbose
 
-      # Install necessary components and run a coverage check using cargo and llvm-cov
+      # Run a coverage check using cargo and llvm-cov
       - name: Run Coverage Check
-        run: |
-          rustup component add llvm-tools-preview --toolchain stable-x86_64-unknown-linux-gnu
-          cargo +stable install cargo-llvm-cov
-          cargo llvm-cov --lcov --output-path coverage.info
+        run: cargo llvm-cov --lcov --output-path coverage.info
 
       # Upload the generated coverage info to Codecov bot
       - name: Upload coverage reports to Codecov
@@ -45,11 +105,13 @@ jobs:
         env:
           CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
-      # Install DeepSource CLI and upload the generated coverage info to DeepSource
+      # Install DeepSource CLI only if not cached and upload coverage
       - name: Upload coverage reports to DeepSource
         run: |
-          # Install deepsource CLI
-          curl https://deepsource.io/cli | sh
+          # Install deepsource CLI only if not cached
+          if [ ! -f "./bin/deepsource" ]; then
+            curl https://deepsource.io/cli | sh
+          fi
 
           # From the root directory, run the report coverage command
           ./bin/deepsource report --analyzer test-coverage --key rust --value-file ./coverage.info

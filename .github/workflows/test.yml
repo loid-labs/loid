@@ -1,0 +1,55 @@
+name: Test
+
+on:
+  push:
+    # This workflow will run whenever a push is made to the main branch
+    branches: [ "main" ]
+  pull_request:
+    # This workflow will run on pull requests targeting the main branch
+    branches: [ "main" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      # Run the cargo build command and output details with --verbose
+      - name: Build
+        run: cargo build --verbose
+
+      # Run the cargo test command and output details with --verbose
+      - name: Run tests
+        run: cargo test --verbose
+
+      # Install necessary components and run a coverage check using cargo and llvm-cov
+      - name: Run Coverage Check
+        run: |
+          rustup component add llvm-tools-preview --toolchain stable-x86_64-unknown-linux-gnu
+          cargo +stable install cargo-llvm-cov
+          cargo llvm-cov --lcov --output-path coverage.info
+
+      # Upload the generated coverage info to Codecov bot
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+
+      # Install DeepSource CLI and upload the generated coverage info to DeepSource
+      - name: Upload coverage reports to DeepSource
+        run: |
+          # Install deepsource CLI
+          curl https://deepsource.io/cli | sh
+
+          # From the root directory, run the report coverage command
+          ./bin/deepsource report --analyzer test-coverage --key rust --value-file ./coverage.info
+
+        env:
+          DEEPSOURCE_DSN: ${{ secrets.DEEPSOURCE_DSN }}

@@ -1,5 +1,5 @@
-use loid_transport::CalculatorService;
 use loid_transport::calculator_proto::calculator_server::CalculatorServer;
+use loid_transport::CalculatorService;
 use tonic::transport::Server;
 
 #[tokio::main]

@@ -3,7 +3,7 @@ build:
     cargo install --path bins/cli
 
 test:
-    cargo test
+    cargo nextest run
 
 fmt:
     cargo fmt

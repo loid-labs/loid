@@ -296,27 +296,27 @@ impl EventBuilder {
         self
     }
 
-    pub fn with_text_field(mut self, key: &str, value: &str) -> Self {
+    pub fn with_text_field(self, key: &str, value: &str) -> Self {
         self.with_field(key, Value::String(value.to_string()))
     }
 
-    pub fn with_int_field(mut self, key: &str, value: i64) -> Self {
+    pub fn with_int_field(self, key: &str, value: i64) -> Self {
         self.with_field(key, Value::Int(value))
     }
 
-    pub fn with_float_field(mut self, key: &str, value: f64) -> Self {
+    pub fn with_float_field(self, key: &str, value: f64) -> Self {
         self.with_field(key, Value::Float(value))
     }
 
-    pub fn with_bool_field(mut self, key: &str, value: bool) -> Self {
+    pub fn with_bool_field(self, key: &str, value: bool) -> Self {
         self.with_field(key, Value::Bool(value))
     }
 
-    pub fn with_list_field(mut self, key: &str, value: Vec<Value>) -> Self {
+    pub fn with_list_field(self, key: &str, value: Vec<Value>) -> Self {
         self.with_field(key, Value::List(value))
     }
 
-    pub fn with_map_field(mut self, key: &str, value: HashMap<String, Value>) -> Self {
+    pub fn with_map_field(self, key: &str, value: HashMap<String, Value>) -> Self {
         self.with_field(key, Value::Map(value))
     }
 

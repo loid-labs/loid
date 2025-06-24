@@ -41,9 +41,8 @@ impl Context {
     /// Write an info message to stdout (only if verbose)
     pub fn info(&self, message: &str) -> std::io::Result<()> {
         if self.verbose > 0 {
-            self.stdout.write_line(&format!("{}", style(message).dim()))
-        } else {
-            Ok(())
+            return self.stdout.write_line(&format!("{}", style(message).dim()))
         }
+        Ok(())
     }
 }

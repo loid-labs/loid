@@ -78,7 +78,7 @@ jobs:
       # Install cargo-llvm-cov only if not cached
       - name: Install cargo-llvm-cov
         if: steps.cargo-tools-cache.outputs.cache-hit != 'true'
-        run: cargo +stable install cargo-llvm-cov
+        run: cargo +stable install cargo-llvm-cov  || true
 
       # Cache DeepSource CLI
       - name: Cache DeepSource CLI

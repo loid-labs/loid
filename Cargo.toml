@@ -17,6 +17,7 @@ version = "0.1.0"
 edition = "2024"
 authors = ["Daniel Seifert <loid@dfseifert.dev>"]
 repository = ""
+rust-version = "1.87.0"
 
 [workspace.dependencies]
 tokio = { version = "1.45.0", features = ["full"] }

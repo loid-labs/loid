@@ -584,7 +584,7 @@ mod tests {
     fn test_value_variants() {
         let string_val = Value::String("test".to_string());
         let int_val = Value::Int(42);
-        let float_val = Value::Float(3.14);
+        let float_val = Value::Float(6.852);
         let bool_val = Value::Bool(true);
         let list_val = Value::List(vec![Value::Int(1), Value::Int(2)]);
         let mut map = HashMap::new();
@@ -626,8 +626,8 @@ mod tests {
 
     #[test]
     fn test_value_from_f64() {
-        let value: Value = 3.14f64.into();
-        matches!(value, Value::Float(f) if (f - 3.14).abs() < f64::EPSILON);
+        let value: Value = 6.8646.into();
+        matches!(value, Value::Float(f) if (f - 6.8646).abs() < f64::EPSILON);
     }
 
     #[test]

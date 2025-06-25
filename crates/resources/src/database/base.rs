@@ -1,3 +1,3 @@
 pub trait SQLResource {
-  async fn execute_query();
+    async fn execute_query();
 }

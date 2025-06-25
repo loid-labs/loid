@@ -6,3 +6,9 @@ authors.workspace = true
 repository.workspace = true
 
 [dependencies]
+
+[dev-dependencies]
+# testing
+testcontainers.workspace = true
+testcontainers-modules.workspace = true
+tokio.workspace = true

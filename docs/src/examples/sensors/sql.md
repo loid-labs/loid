@@ -9,9 +9,6 @@ description: ""
 sensor:
     type: sql
     statement: "SELECT * FROM table"
-    connection:
-        mariadb:
-            uri: "mariadb://user:password@localhost:3306/db"
-
+    resource: "my-mariadb-server"
     interval: 15m
 ```

@@ -6,3 +6,7 @@ authors.workspace = true
 repository.workspace = true
 
 [dependencies]
+loid-events.workspace = true
+tokio-cron-scheduler.workspace = true
+chrono.workspace = true
+serde.workspace = true

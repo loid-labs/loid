@@ -2,7 +2,6 @@ use crate::cli::command::Command;
 use crate::cli::context::Context;
 use crate::cli::result::{CliResult, ExitStatus};
 use clap::Parser;
-use std::future::IntoFuture;
 
 /// This struct represents the `info` cli arguments
 #[derive(Debug, Parser, PartialEq, Eq)]

@@ -310,6 +310,10 @@ if (!nativeBinding) {
   throw new Error(`Failed to load native binding`)
 }
 
-const { sum } = nativeBinding
+const { Impact, Urgency, Priority, Event, EventBuilder } = nativeBinding
 
-module.exports.sum = sum
+module.exports.Impact = Impact
+module.exports.Urgency = Urgency
+module.exports.Priority = Priority
+module.exports.Event = Event
+module.exports.EventBuilder = EventBuilder

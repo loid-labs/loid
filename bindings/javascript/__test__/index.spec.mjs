@@ -1,7 +1,9 @@
 import test from 'ava'
 
-import { sum } from '../index.js'
+import { EventBuilder, Impact} from '../index.js'
 
-test('sum from native', (t) => {
-  t.is(sum(1, 2), 3)
+test('build basic event', (t) => {
+  const builder = new EventBuilder('test', null);
+  const event = builder.withImpact(Impact.Negligible).build()
+  t.is(event.impact, Impact.Negligible)
 })

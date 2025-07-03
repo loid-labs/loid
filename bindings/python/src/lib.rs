@@ -1,7 +1,7 @@
-use loid_events::prelude::{Event, Impact, Priority, Source, Urgency, EventBuilder};
-use pyo3::IntoPyObjectExt;
+use loid_events::prelude::{Event, EventBuilder, Impact, Priority, Source, Urgency};
 use pyo3::prelude::*;
 use pyo3::types::PyDateTime;
+use pyo3::IntoPyObjectExt;
 
 #[pyclass(name = "Impact", eq, ord)]
 #[derive(Clone, Eq, PartialEq, PartialOrd, Ord)]
@@ -248,7 +248,6 @@ impl PyEvent {
         )
     }
 
-
     fn __repr__(&self) -> String {
         self.__str__()
     }
@@ -264,7 +263,10 @@ impl PyEventBuilder {
         PyEventBuilder(EventBuilder::new(Source { system, source_id }))
     }
 
-    fn with_correlation_id(mut self_: PyRefMut<'_, Self>, correlation_id: String) -> PyRefMut<'_, Self> {
+    fn with_correlation_id(
+        mut self_: PyRefMut<'_, Self>,
+        correlation_id: String,
+    ) -> PyRefMut<'_, Self> {
         self_.0.with_correlation_id(correlation_id.parse().unwrap());
         self_
     }

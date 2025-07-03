@@ -12,7 +12,8 @@ members = [
     "crates/resources",
     "crates/events",
     # bindings
-    "bindings/python"
+    "bindings/python",
+    "bindings/javascript",
 ]
 resolver = "2"
 

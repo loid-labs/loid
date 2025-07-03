@@ -1,7 +1,7 @@
 use loid_events::prelude::{Event, EventBuilder, Impact, Priority, Source, Urgency};
-use pyo3::IntoPyObjectExt;
 use pyo3::prelude::*;
 use pyo3::types::PyDateTime;
+use pyo3::IntoPyObjectExt;
 
 #[pyclass(name = "Impact", eq, eq_int, ord, frozen, hash)]
 #[derive(Clone, Eq, PartialEq, PartialOrd, Ord, Hash)]
@@ -228,10 +228,7 @@ impl PyEventBuilder {
     }
 
     #[pyo3(signature = (source))]
-    fn with_source(
-        mut self_: PyRefMut<'_, Self>,
-        source: PySource,
-    ) -> PyRefMut<'_, Self> {
+    fn with_source(mut self_: PyRefMut<'_, Self>, source: PySource) -> PyRefMut<'_, Self> {
         self_.0.with_source(source.0);
         self_
     }

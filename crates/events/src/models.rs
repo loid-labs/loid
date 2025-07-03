@@ -5,7 +5,9 @@ use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 use uuid::{NoContext, Timestamp, Uuid};
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, PartialOrd, Ord, Eq, Default)]
+#[derive(
+    Serialize, Deserialize, Debug, Clone, Copy, PartialEq, PartialOrd, Ord, Eq, Default, Hash,
+)]
 pub enum Impact {
     #[default]
     NEGLIGIBLE,
@@ -27,7 +29,9 @@ impl Display for Impact {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, PartialOrd, Ord, Eq, Default)]
+#[derive(
+    Serialize, Deserialize, Debug, Clone, Copy, PartialEq, PartialOrd, Ord, Eq, Default, Hash,
+)]
 pub enum Urgency {
     #[default]
     LOW,
@@ -47,7 +51,9 @@ impl Display for Urgency {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, PartialOrd, Ord, Eq, Default)]
+#[derive(
+    Serialize, Deserialize, Debug, Clone, Copy, PartialEq, PartialOrd, Ord, Eq, Default, Hash,
+)]
 pub enum Priority {
     #[default]
     LOW,
@@ -67,10 +73,19 @@ impl Display for Priority {
     }
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct Source {
     pub system: String,
     pub source_id: Option<String>,
+}
+
+impl Default for Source {
+    fn default() -> Self {
+        Self {
+            system: "manual".to_string(),
+            source_id: None,
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Default)]
@@ -289,10 +304,10 @@ pub struct EventBuilder {
 }
 
 impl EventBuilder {
-    pub fn new(source: Source) -> Self {
+    pub fn new() -> Self {
         Self {
             correlation_id: None,
-            source: source,
+            source: Source::default(),
             fields: HashMap::new(),
             priority: Priority::default(),
             impact: Impact::default(),
@@ -375,12 +390,6 @@ impl EventBuilder {
             urgency: self.urgency,
             resolved_at: None,
         }
-    }
-}
-
-impl From<Source> for EventBuilder {
-    fn from(source: Source) -> Self {
-        Self::new(source)
     }
 }
 
@@ -583,7 +592,7 @@ mod tests {
     #[test]
     fn test_source_default() {
         let source = Source::default();
-        assert_eq!(source.system, "");
+        assert_eq!(source.system, "manual");
         assert_eq!(source.source_id, None);
     }
 
@@ -686,10 +695,10 @@ mod tests {
             system: "test_system".to_string(),
             source_id: None,
         };
-        let builder = EventBuilder::new(source.clone());
+        let mut builder = EventBuilder::new();
 
         // Build event to verify the source was set correctly
-        let event = builder.build();
+        let event = builder.with_source(source).build();
         assert_eq!(event.source.system, "test_system");
         assert_eq!(event.source.source_id, None);
 
@@ -700,23 +709,12 @@ mod tests {
     }
 
     #[test]
-    fn test_event_builder_from_source() {
-        let source = Source {
-            system: "test_system".to_string(),
-            source_id: Some("123".to_string()),
-        };
-        let builder: EventBuilder = source.clone().into();
-        let event = builder.build();
-        assert_eq!(event.source.system, "test_system");
-        assert_eq!(event.source.source_id, Some("123".to_string()));
-    }
-
-    #[test]
     fn test_event_builder_with_correlation_id() {
         let source = Source::default();
         let correlation_id = Uuid::new_v4();
 
-        let event = EventBuilder::new(source)
+        let event = EventBuilder::new()
+            .with_source(source)
             .with_correlation_id(correlation_id)
             .build();
 
@@ -724,26 +722,10 @@ mod tests {
     }
 
     #[test]
-    fn test_event_builder_with_source() {
-        let initial_source = Source::default();
-        let new_source = Source {
-            system: "new_system".to_string(),
-            source_id: Some("new_id".to_string()),
-        };
-
-        let event = EventBuilder::new(initial_source)
-            .with_source(new_source.clone())
-            .build();
-
-        assert_eq!(event.source.system, "new_system");
-        assert_eq!(event.source.source_id, Some("new_id".to_string()));
-    }
-
-    #[test]
     fn test_event_builder_with_priority() {
         let source = Source::default();
 
-        let event = EventBuilder::new(source)
+        let event = EventBuilder::new()
             .with_priority(Priority::CRITICAL)
             .build();
 
@@ -752,31 +734,21 @@ mod tests {
 
     #[test]
     fn test_event_builder_with_impact() {
-        let source = Source::default();
-
-        let event = EventBuilder::new(source)
-            .with_impact(Impact::SEVERE)
-            .build();
+        let event = EventBuilder::new().with_impact(Impact::SEVERE).build();
 
         assert_eq!(event.impact, Impact::SEVERE);
     }
 
     #[test]
     fn test_event_builder_with_urgency() {
-        let source = Source::default();
-
-        let event = EventBuilder::new(source)
-            .with_urgency(Urgency::CRITICAL)
-            .build();
+        let event = EventBuilder::new().with_urgency(Urgency::CRITICAL).build();
 
         assert_eq!(event.urgency, Urgency::CRITICAL);
     }
 
     #[test]
     fn test_event_builder_with_all_priority_fields() {
-        let source = Source::default();
-
-        let event = EventBuilder::new(source)
+        let event = EventBuilder::new()
             .with_impact(Impact::SIGNIFICANT)
             .with_urgency(Urgency::HIGH)
             .with_priority(Priority::MEDIUM)
@@ -789,12 +761,9 @@ mod tests {
 
     #[test]
     fn test_event_builder_with_field() {
-        let source = Source::default();
         let value = Value::String("test_value".to_string());
 
-        let event = EventBuilder::new(source)
-            .with_field("test_key", value)
-            .build();
+        let event = EventBuilder::new().with_field("test_key", value).build();
 
         assert!(event.fields.contains_key("test_key"));
         matches!(event.fields.get("test_key"), Some(Value::String(s)) if s == "test_value");
@@ -802,9 +771,7 @@ mod tests {
 
     #[test]
     fn test_event_builder_with_text_field() {
-        let source = Source::default();
-
-        let event = EventBuilder::new(source)
+        let event = EventBuilder::new()
             .with_text_field("name", "John Doe")
             .build();
 
@@ -813,59 +780,43 @@ mod tests {
 
     #[test]
     fn test_event_builder_with_int_field() {
-        let source = Source::default();
-
-        let event = EventBuilder::new(source).with_int_field("age", 30).build();
+        let event = EventBuilder::new().with_int_field("age", 30).build();
 
         matches!(event.fields.get("age"), Some(Value::Int(30)));
     }
 
     #[test]
     fn test_event_builder_with_float_field() {
-        let source = Source::default();
-
-        let event = EventBuilder::new(source)
-            .with_float_field("score", 95.5)
-            .build();
+        let event = EventBuilder::new().with_float_field("score", 95.5).build();
 
         matches!(event.fields.get("score"), Some(Value::Float(95.5)));
     }
 
     #[test]
     fn test_event_builder_with_bool_field() {
-        let source = Source::default();
-
-        let event = EventBuilder::new(source)
-            .with_bool_field("active", true)
-            .build();
+        let event = EventBuilder::new().with_bool_field("active", true).build();
 
         matches!(event.fields.get("active"), Some(Value::Bool(true)));
     }
 
     #[test]
     fn test_event_builder_with_list_field() {
-        let source = Source::default();
         let list = vec![Value::Int(1), Value::Int(2), Value::Int(3)];
 
-        let event = EventBuilder::new(source)
-            .with_list_field("numbers", list)
-            .build();
+        let event = EventBuilder::new().with_list_field("numbers", list).build();
 
         matches!(event.fields.get("numbers"), Some(Value::List(v)) if v.len() == 3);
     }
 
     #[test]
     fn test_event_builder_with_map_field() {
-        let source = Source::default();
         let mut map = HashMap::new();
         map.insert(
             "nested_key".to_string(),
             Value::String("nested_value".to_string()),
         );
 
-        let event = EventBuilder::new(source)
-            .with_map_field("metadata", map)
-            .build();
+        let event = EventBuilder::new().with_map_field("metadata", map).build();
 
         matches!(event.fields.get("metadata"), Some(Value::Map(m)) if m.len() == 1);
     }
@@ -878,7 +829,8 @@ mod tests {
         };
         let correlation_id = Uuid::new_v4();
 
-        let event = EventBuilder::new(source)
+        let event = EventBuilder::new()
+            .with_source(source)
             .with_correlation_id(correlation_id)
             .with_impact(Impact::MODERATE)
             .with_urgency(Urgency::HIGH)
@@ -903,20 +855,17 @@ mod tests {
     // ========== Event Tests ==========
     #[test]
     fn test_event_build_generates_unique_ids() {
-        let source = Source::default();
-
-        let event1 = EventBuilder::new(source.clone()).build();
-        let event2 = EventBuilder::new(source).build();
+        let event1 = EventBuilder::new().build();
+        let event2 = EventBuilder::new().build();
 
         assert_ne!(event1.id, event2.id);
     }
 
     #[test]
     fn test_event_build_sets_timestamps() {
-        let source = Source::default();
         let before = Utc::now();
 
-        let event = EventBuilder::new(source).build();
+        let event = EventBuilder::new().build();
 
         let after = Utc::now();
 
@@ -935,8 +884,7 @@ mod tests {
 
     #[test]
     fn test_event_id_is_uuid_v7() {
-        let source = Source::default();
-        let event = EventBuilder::new(source).build();
+        let event = EventBuilder::new().build();
 
         // UUID v7 has version bits set to 0111 (7) in the version field
         assert_eq!(event.id.get_version_num(), 7);
@@ -949,7 +897,7 @@ mod tests {
             source_id: Some("123".to_string()),
         };
 
-        let original = EventBuilder::new(source)
+        let original = EventBuilder::new()
             .with_impact(Impact::SEVERE)
             .with_urgency(Urgency::CRITICAL)
             .with_priority(Priority::HIGH)
@@ -973,8 +921,7 @@ mod tests {
 
     #[test]
     fn test_event_default_priority_values() {
-        let source = Source::default();
-        let event = EventBuilder::new(source).build();
+        let event = EventBuilder::new().build();
 
         // Test that default values are set correctly
         assert_eq!(event.impact, Impact::NEGLIGIBLE);
@@ -984,8 +931,6 @@ mod tests {
 
     #[test]
     fn test_complex_nested_values() {
-        let source = Source::default();
-
         // Create nested map
         let mut inner_map = HashMap::new();
         inner_map.insert(
@@ -1001,7 +946,7 @@ mod tests {
             Value::Map(inner_map),
         ];
 
-        let event = EventBuilder::new(source)
+        let event = EventBuilder::new()
             .with_list_field("complex_list", mixed_list)
             .build();
 
@@ -1018,8 +963,7 @@ mod tests {
 
     #[test]
     fn test_empty_fields() {
-        let source = Source::default();
-        let event = EventBuilder::new(source).build();
+        let event = EventBuilder::new().build();
 
         assert!(event.fields.is_empty());
         assert!(event.correlation_id.is_none());
@@ -1028,9 +972,7 @@ mod tests {
 
     #[test]
     fn test_overwrite_field() {
-        let source = Source::default();
-
-        let event = EventBuilder::new(source)
+        let event = EventBuilder::new()
             .with_text_field("key", "first_value")
             .with_text_field("key", "second_value") // Should overwrite
             .build();
@@ -1058,10 +1000,8 @@ mod tests {
 
     #[test]
     fn test_event_with_extreme_priority_combinations() {
-        let source = Source::default();
-
         // Test maximum severity event
-        let critical_event = EventBuilder::new(source.clone())
+        let critical_event = EventBuilder::new()
             .with_impact(Impact::SEVERE)
             .with_urgency(Urgency::CRITICAL)
             .with_priority(Priority::CRITICAL)
@@ -1073,7 +1013,7 @@ mod tests {
         assert_eq!(critical_event.priority, Priority::CRITICAL);
 
         // Test minimum severity event
-        let minimal_event = EventBuilder::new(source)
+        let minimal_event = EventBuilder::new()
             .with_impact(Impact::NEGLIGIBLE)
             .with_urgency(Urgency::LOW)
             .with_priority(Priority::LOW)
@@ -1087,8 +1027,7 @@ mod tests {
 
     #[test]
     fn test_timestamp_relationships() {
-        let source = Source::default();
-        let event = EventBuilder::new(source).build();
+        let event = EventBuilder::new().build();
 
         // created_at and received_at should be very close or equal when built
         let time_diff =
@@ -1126,7 +1065,7 @@ mod json_tests {
         fields.insert("enabled".to_string(), Value::Bool(true));
         fields.insert("score".to_string(), Value::Float(95.5));
 
-        let original_event = EventBuilder::new(source)
+        let original_event = EventBuilder::new()
             .with_correlation_id(correlation_id)
             .with_impact(Impact::MODERATE)
             .with_urgency(Urgency::HIGH)

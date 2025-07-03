@@ -7,21 +7,21 @@ use loid_events::prelude::{Event, EventBuilder, Impact, Priority, Source, Urgenc
 
 #[napi(string_enum, js_name = "Impact")]
 pub enum JsImpact {
-    Negligible,
-    Minor,
-    Moderate,
-    Significant,
-    Severe,
+    NEGLIGIBLE,
+    MINOR,
+    MODERATE,
+    SIGNIFICANT,
+    SEVERE,
 }
 
 impl From<Impact> for JsImpact {
     fn from(impact: Impact) -> Self {
         match impact {
-            Impact::NEGLIGIBLE => JsImpact::Negligible,
-            Impact::MINOR => JsImpact::Minor,
-            Impact::MODERATE => JsImpact::Moderate,
-            Impact::SIGNIFICANT => JsImpact::Significant,
-            Impact::SEVERE => JsImpact::Severe,
+            Impact::NEGLIGIBLE => JsImpact::NEGLIGIBLE,
+            Impact::MINOR => JsImpact::MINOR,
+            Impact::MODERATE => JsImpact::MODERATE,
+            Impact::SIGNIFICANT => JsImpact::SIGNIFICANT,
+            Impact::SEVERE => JsImpact::SEVERE,
         }
     }
 }
@@ -29,30 +29,30 @@ impl From<Impact> for JsImpact {
 impl From<JsImpact> for Impact {
     fn from(js_impact: JsImpact) -> Self {
         match js_impact {
-            JsImpact::Negligible => Impact::NEGLIGIBLE,
-            JsImpact::Minor => Impact::MINOR,
-            JsImpact::Moderate => Impact::MODERATE,
-            JsImpact::Significant => Impact::SIGNIFICANT,
-            JsImpact::Severe => Impact::SEVERE,
+            JsImpact::NEGLIGIBLE => Impact::NEGLIGIBLE,
+            JsImpact::MINOR => Impact::MINOR,
+            JsImpact::MODERATE => Impact::MODERATE,
+            JsImpact::SIGNIFICANT => Impact::SIGNIFICANT,
+            JsImpact::SEVERE => Impact::SEVERE,
         }
     }
 }
 
 #[napi(string_enum, js_name = "Urgency")]
 pub enum JsUrgency {
-    Low,
-    Medium,
-    High,
-    Critical,
+    LOW,
+    MEDIUM,
+    HIGH,
+    CRITICAL,
 }
 
 impl From<Urgency> for JsUrgency {
     fn from(urgency: Urgency) -> Self {
         match urgency {
-            Urgency::LOW => JsUrgency::Low,
-            Urgency::MEDIUM => JsUrgency::Medium,
-            Urgency::HIGH => JsUrgency::High,
-            Urgency::CRITICAL => JsUrgency::Critical,
+            Urgency::LOW => JsUrgency::LOW,
+            Urgency::MEDIUM => JsUrgency::MEDIUM,
+            Urgency::HIGH => JsUrgency::HIGH,
+            Urgency::CRITICAL => JsUrgency::CRITICAL,
         }
     }
 }
@@ -60,29 +60,29 @@ impl From<Urgency> for JsUrgency {
 impl From<JsUrgency> for Urgency {
     fn from(js_urgency: JsUrgency) -> Self {
         match js_urgency {
-            JsUrgency::Low => Urgency::LOW,
-            JsUrgency::Medium => Urgency::MEDIUM,
-            JsUrgency::High => Urgency::HIGH,
-            JsUrgency::Critical => Urgency::CRITICAL,
+            JsUrgency::LOW => Urgency::LOW,
+            JsUrgency::MEDIUM => Urgency::MEDIUM,
+            JsUrgency::HIGH => Urgency::HIGH,
+            JsUrgency::CRITICAL => Urgency::CRITICAL,
         }
     }
 }
 
 #[napi(string_enum, js_name = "Priority")]
 pub enum JsPriority {
-    Low,
-    Medium,
-    High,
-    Critical,
+    LOW,
+    MEDIUM,
+    HIGH,
+    CRITICAL,
 }
 
 impl From<Priority> for JsPriority {
     fn from(priority: Priority) -> Self {
         match priority {
-            Priority::LOW => JsPriority::Low,
-            Priority::MEDIUM => JsPriority::Medium,
-            Priority::HIGH => JsPriority::High,
-            Priority::CRITICAL => JsPriority::Critical,
+            Priority::LOW => JsPriority::LOW,
+            Priority::MEDIUM => JsPriority::MEDIUM,
+            Priority::HIGH => JsPriority::HIGH,
+            Priority::CRITICAL => JsPriority::CRITICAL,
         }
     }
 }
@@ -90,10 +90,10 @@ impl From<Priority> for JsPriority {
 impl From<JsPriority> for Priority {
     fn from(js_priority: JsPriority) -> Self {
         match js_priority {
-            JsPriority::Low => Priority::LOW,
-            JsPriority::Medium => Priority::MEDIUM,
-            JsPriority::High => Priority::HIGH,
-            JsPriority::Critical => Priority::CRITICAL,
+            JsPriority::LOW => Priority::LOW,
+            JsPriority::MEDIUM => Priority::MEDIUM,
+            JsPriority::HIGH => Priority::HIGH,
+            JsPriority::CRITICAL => Priority::CRITICAL,
         }
     }
 }
@@ -215,9 +215,9 @@ pub struct JsEventBuilder {
 #[napi]
 impl JsEventBuilder {
     #[napi(constructor)]
-    pub fn new(system: String, source_id: Option<String>) -> Self {
+    pub fn new() -> Self {
         JsEventBuilder {
-            inner: EventBuilder::new(Source { system, source_id }),
+            inner: EventBuilder::new(),
         }
     }
 

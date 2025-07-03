@@ -12,6 +12,12 @@ classifiers = [
 ]
 dynamic = ["version"]
 
+[dependency-groups]
+dev = [
+    "pytest>=8.1.1,<9",
+    "pytest-pretty==1.3.0",
+]
+
 [tool.maturin]
 bindings = 'pyo3'
 features = ["pyo3/extension-module"]

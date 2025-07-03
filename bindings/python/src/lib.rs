@@ -1,146 +1,101 @@
-use loid_events::prelude::{Event, Impact, Priority, Source, Urgency, EventBuilder};
+use loid_events::prelude::{Event, EventBuilder, Impact, Priority, Source, Urgency};
 use pyo3::IntoPyObjectExt;
 use pyo3::prelude::*;
 use pyo3::types::PyDateTime;
 
-#[pyclass(name = "Impact", eq, ord)]
-#[derive(Clone, Eq, PartialEq, PartialOrd, Ord)]
-pub struct PyImpact(Impact);
+#[pyclass(name = "Impact", eq, eq_int, ord, frozen, hash)]
+#[derive(Clone, Eq, PartialEq, PartialOrd, Ord, Hash)]
+pub enum PyImpact {
+    NEGLIGIBLE,
+    MINOR,
+    MODERATE,
+    SIGNIFICANT,
+    SEVERE,
+}
 
-#[pymethods]
-impl PyImpact {
-    #[new]
-    fn new(value: &str) -> PyResult<Self> {
-        let impact = match value.to_uppercase().as_str() {
-            "NEGLIGIBLE" => Impact::NEGLIGIBLE,
-            "MINOR" => Impact::MINOR,
-            "MODERATE" => Impact::MODERATE,
-            "SIGNIFICANT" => Impact::SIGNIFICANT,
-            "SEVERE" => Impact::SEVERE,
-            _ => {
-                return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(
-                    "Invalid impact value",
-                ));
-            }
-        };
-        Ok(PyImpact(impact))
-    }
-
-    #[classattr]
-    const NEGLIGIBLE: PyImpact = PyImpact(Impact::NEGLIGIBLE);
-
-    #[classattr]
-    const MINOR: PyImpact = PyImpact(Impact::MINOR);
-
-    #[classattr]
-    const MODERATE: PyImpact = PyImpact(Impact::MODERATE);
-
-    #[classattr]
-    const SIGNIFICANT: PyImpact = PyImpact(Impact::SIGNIFICANT);
-
-    #[classattr]
-    const SEVERE: PyImpact = PyImpact(Impact::SEVERE);
-
-    fn __str__(&self) -> String {
-        format!("Impact.{:?}", self.0)
-    }
-
-    fn __repr__(&self) -> String {
-        format!("Impact('{:?}')", self.0)
-    }
-
-    fn __int__(&self) -> i32 {
-        self.0 as i32
+impl From<Impact> for PyImpact {
+    fn from(impact: Impact) -> Self {
+        match impact {
+            Impact::NEGLIGIBLE => PyImpact::NEGLIGIBLE,
+            Impact::MINOR => PyImpact::MINOR,
+            Impact::MODERATE => PyImpact::MODERATE,
+            Impact::SIGNIFICANT => PyImpact::SIGNIFICANT,
+            Impact::SEVERE => PyImpact::SEVERE,
+        }
     }
 }
 
-#[pyclass(name = "Urgency", eq, ord)]
-#[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub struct PyUrgency(Urgency);
-
-#[pymethods]
-impl PyUrgency {
-    #[new]
-    fn new(value: &str) -> PyResult<Self> {
-        let urgency = match value.to_uppercase().as_str() {
-            "LOW" => Urgency::LOW,
-            "MEDIUM" => Urgency::MEDIUM,
-            "HIGH" => Urgency::HIGH,
-            "CRITICAL" => Urgency::CRITICAL,
-            _ => {
-                return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(
-                    "Invalid urgency value",
-                ));
-            }
-        };
-        Ok(PyUrgency(urgency))
-    }
-
-    #[classattr]
-    const LOW: PyUrgency = PyUrgency(Urgency::LOW);
-
-    #[classattr]
-    const MEDIUM: PyUrgency = PyUrgency(Urgency::MEDIUM);
-
-    #[classattr]
-    const HIGH: PyUrgency = PyUrgency(Urgency::HIGH);
-
-    #[classattr]
-    const CRITICAL: PyUrgency = PyUrgency(Urgency::CRITICAL);
-
-    fn __str__(&self) -> String {
-        format!("Urgency.{:?}", self.0)
-    }
-
-    fn __repr__(&self) -> String {
-        format!("Urgency('{:?}')", self.0)
-    }
-
-    fn __int__(&self) -> i32 {
-        self.0 as i32
+impl From<PyImpact> for Impact {
+    fn from(js_impact: PyImpact) -> Self {
+        match js_impact {
+            PyImpact::NEGLIGIBLE => Impact::NEGLIGIBLE,
+            PyImpact::MINOR => Impact::MINOR,
+            PyImpact::MODERATE => Impact::MODERATE,
+            PyImpact::SIGNIFICANT => Impact::SIGNIFICANT,
+            PyImpact::SEVERE => Impact::SEVERE,
+        }
     }
 }
 
-#[pyclass(name = "Priority", eq, ord)]
-#[derive(Clone, PartialEq, Eq, PartialOrd, Ord)]
-pub struct PyPriority(Priority);
+#[pyclass(name = "Urgency", eq, eq_int, ord, frozen, hash)]
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PyUrgency {
+    LOW,
+    MEDIUM,
+    HIGH,
+    CRITICAL,
+}
 
-#[pymethods]
-impl PyPriority {
-    #[new]
-    fn new(value: &str) -> PyResult<Self> {
-        let priority = match value.to_uppercase().as_str() {
-            "LOW" => Priority::LOW,
-            "MEDIUM" => Priority::MEDIUM,
-            "HIGH" => Priority::HIGH,
-            "CRITICAL" => Priority::CRITICAL,
-            _ => {
-                return Err(PyErr::new::<pyo3::exceptions::PyValueError, _>(
-                    "Invalid priority value",
-                ));
-            }
-        };
-        Ok(PyPriority(priority))
+impl From<Urgency> for PyUrgency {
+    fn from(urgency: Urgency) -> Self {
+        match urgency {
+            Urgency::LOW => PyUrgency::LOW,
+            Urgency::MEDIUM => PyUrgency::MEDIUM,
+            Urgency::HIGH => PyUrgency::HIGH,
+            Urgency::CRITICAL => PyUrgency::CRITICAL,
+        }
     }
+}
 
-    #[classattr]
-    const LOW: PyPriority = PyPriority(Priority::LOW);
-
-    #[classattr]
-    const MEDIUM: PyPriority = PyPriority(Priority::MEDIUM);
-
-    #[classattr]
-    const HIGH: PyPriority = PyPriority(Priority::HIGH);
-
-    #[classattr]
-    const CRITICAL: PyPriority = PyPriority(Priority::CRITICAL);
-
-    fn __str__(&self) -> String {
-        format!("Priority.{:?}", self.0)
+impl From<PyUrgency> for Urgency {
+    fn from(js_urgency: PyUrgency) -> Self {
+        match js_urgency {
+            PyUrgency::LOW => Urgency::LOW,
+            PyUrgency::MEDIUM => Urgency::MEDIUM,
+            PyUrgency::HIGH => Urgency::HIGH,
+            PyUrgency::CRITICAL => Urgency::CRITICAL,
+        }
     }
+}
 
-    fn __repr__(&self) -> String {
-        format!("PyPriority('{:?}')", self.0)
+#[pyclass(name = "Priority", eq, eq_int, ord, frozen, hash)]
+#[derive(Clone, PartialEq, Eq, PartialOrd, Ord, Hash)]
+pub enum PyPriority {
+    LOW,
+    MEDIUM,
+    HIGH,
+    CRITICAL,
+}
+
+impl From<Priority> for PyPriority {
+    fn from(priority: Priority) -> Self {
+        match priority {
+            Priority::LOW => PyPriority::LOW,
+            Priority::MEDIUM => PyPriority::MEDIUM,
+            Priority::HIGH => PyPriority::HIGH,
+            Priority::CRITICAL => PyPriority::CRITICAL,
+        }
+    }
+}
+
+impl From<PyPriority> for Priority {
+    fn from(js_priority: PyPriority) -> Self {
+        match js_priority {
+            PyPriority::LOW => Priority::LOW,
+            PyPriority::MEDIUM => Priority::MEDIUM,
+            PyPriority::HIGH => Priority::HIGH,
+            PyPriority::CRITICAL => Priority::CRITICAL,
+        }
     }
 }
 
@@ -200,17 +155,17 @@ impl PyEvent {
 
     #[getter]
     fn impact(&self) -> PyImpact {
-        PyImpact(self.0.impact)
+        self.0.impact.into()
     }
 
     #[getter]
     fn priority(&self) -> PyPriority {
-        PyPriority(self.0.priority)
+        self.0.priority.into()
     }
 
     #[getter]
     fn urgency(&self) -> PyUrgency {
-        PyUrgency(self.0.urgency)
+        self.0.urgency.into()
     }
 
     #[getter]
@@ -235,19 +190,26 @@ impl PyEvent {
         format!(
             "Event({}, corr={}, src={}:{}, impact={}, priority={}, urgency={}, rcv={}, crt={}, res={}, fields={})",
             self.0.id,
-            self.0.correlation_id.map_or("None".to_string(), |id| id.to_string()),
+            self.0
+                .correlation_id
+                .map_or("None".to_string(), |id| id.to_string()),
             self.0.source.system,
-            self.0.source.source_id.as_ref().map_or("None", |s| s.as_str()),
+            self.0
+                .source
+                .source_id
+                .as_ref()
+                .map_or("None", |s| s.as_str()),
             self.0.impact,
             self.0.priority,
             self.0.urgency,
             self.0.received_at.to_rfc3339(),
             self.0.created_at.to_rfc3339(),
-            self.0.resolved_at.map_or("None".to_string(), |dt| dt.to_rfc3339()),
+            self.0
+                .resolved_at
+                .map_or("None".to_string(), |dt| dt.to_rfc3339()),
             self.0.fields.len()
         )
     }
-
 
     fn __repr__(&self) -> String {
         self.__str__()
@@ -260,27 +222,42 @@ pub struct PyEventBuilder(EventBuilder);
 #[pymethods]
 impl PyEventBuilder {
     #[new]
-    fn new(system: String, source_id: Option<String>) -> Self {
-        PyEventBuilder(EventBuilder::new(Source { system, source_id }))
+    #[pyo3(signature = ())]
+    fn new() -> Self {
+        PyEventBuilder(EventBuilder::new())
     }
 
-    fn with_correlation_id(mut self_: PyRefMut<'_, Self>, correlation_id: String) -> PyRefMut<'_, Self> {
+    #[pyo3(signature = (source))]
+    fn with_source(
+        mut self_: PyRefMut<'_, Self>,
+        source: PySource,
+    ) -> PyRefMut<'_, Self> {
+        self_.0.with_source(source.0);
+        self_
+    }
+
+    #[pyo3(signature = (correlation_id))]
+    fn with_correlation_id(
+        mut self_: PyRefMut<'_, Self>,
+        correlation_id: String,
+    ) -> PyRefMut<'_, Self> {
         self_.0.with_correlation_id(correlation_id.parse().unwrap());
         self_
     }
 
+    #[pyo3(signature = (priority))]
     fn with_priority(mut self_: PyRefMut<'_, Self>, priority: PyPriority) -> PyRefMut<'_, Self> {
-        self_.0.with_priority(priority.0);
+        self_.0.with_priority(priority.into());
         self_
     }
 
     fn with_impact(mut self_: PyRefMut<'_, Self>, impact: PyImpact) -> PyRefMut<'_, Self> {
-        self_.0.with_impact(impact.0);
+        self_.0.with_impact(impact.into());
         self_
     }
 
     fn with_urgency(mut self_: PyRefMut<'_, Self>, urgency: PyUrgency) -> PyRefMut<'_, Self> {
-        self_.0.with_urgency(urgency.0);
+        self_.0.with_urgency(urgency.into());
         self_
     }
 

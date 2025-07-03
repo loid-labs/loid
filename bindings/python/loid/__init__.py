@@ -1,0 +1,1 @@
+from ._loid import __version__

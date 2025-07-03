@@ -1,14 +1,18 @@
 [workspace]
 members = [
+    # bins
     "bins/cli",
     "bins/agent",
     "bins/conductor",
+    # crates
     "crates/engine",
     "crates/transport",
     "crates/sensors",
     "crates/neurons",
     "crates/resources",
     "crates/events",
+    # bindings
+    "bindings/python"
 ]
 resolver = "2"
 

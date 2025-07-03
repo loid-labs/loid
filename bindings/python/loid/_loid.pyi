@@ -1,0 +1,16 @@
+__version__: str
+
+
+class Impact: ...
+
+
+class Urgency: ...
+
+
+class Priority: ...
+
+
+class EventBuilder: ...
+
+
+class Event: ...

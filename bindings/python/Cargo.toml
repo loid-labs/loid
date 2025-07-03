@@ -15,4 +15,5 @@ crate-type = ["cdylib"]
 extension-module = ["pyo3/extension-module"]
 
 [dependencies]
-pyo3 = "0.25.0"
+pyo3 = { version = "0.25.1", features = ["chrono", "chrono-local", "chrono-tz"] }
+loid-events.workspace = true

@@ -1,10 +1,11 @@
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 use std::collections::HashMap;
+use std::fmt::{Display, Formatter};
 use std::str::FromStr;
 use uuid::{NoContext, Timestamp, Uuid};
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Default)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, PartialOrd, Ord, Eq, Default)]
 pub enum Impact {
     #[default]
     NEGLIGIBLE,
@@ -14,7 +15,19 @@ pub enum Impact {
     SEVERE,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Default)]
+impl Display for Impact {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Impact::NEGLIGIBLE => write!(f, "NEGLIGIBLE"),
+            Impact::MINOR => write!(f, "MINOR"),
+            Impact::MODERATE => write!(f, "MODERATE"),
+            Impact::SIGNIFICANT => write!(f, "SIGNIFICANT"),
+            Impact::SEVERE => write!(f, "SEVERE"),
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, PartialOrd, Ord, Eq, Default)]
 pub enum Urgency {
     #[default]
     LOW,
@@ -23,13 +36,35 @@ pub enum Urgency {
     CRITICAL,
 }
 
-#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, PartialOrd, Eq, Default)]
+impl Display for Urgency {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Urgency::LOW => write!(f, "LOW"),
+            Urgency::MEDIUM => write!(f, "MEDIUM"),
+            Urgency::HIGH => write!(f, "HIGH"),
+            Urgency::CRITICAL => write!(f, "CRITICAL"),
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq, PartialOrd, Ord, Eq, Default)]
 pub enum Priority {
     #[default]
     LOW,
     MEDIUM,
     HIGH,
     CRITICAL,
+}
+
+impl Display for Priority {
+    fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Priority::LOW => write!(f, "LOW"),
+            Priority::MEDIUM => write!(f, "MEDIUM"),
+            Priority::HIGH => write!(f, "HIGH"),
+            Priority::CRITICAL => write!(f, "CRITICAL"),
+        }
+    }
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, Default)]
@@ -266,61 +301,61 @@ impl EventBuilder {
         }
     }
 
-    pub fn with_correlation_id(mut self, correlation_id: Uuid) -> Self {
+    pub fn with_correlation_id(&mut self, correlation_id: Uuid) -> &mut Self {
         self.correlation_id = Some(correlation_id);
         self
     }
 
-    pub fn with_source(mut self, source: Source) -> Self {
+    pub fn with_source(&mut self, source: Source) -> &mut Self {
         self.source = source;
         self
     }
 
-    pub fn with_priority(mut self, priority: Priority) -> Self {
+    pub fn with_priority(&mut self, priority: Priority) -> &mut Self {
         self.priority = priority;
         self
     }
 
-    pub fn with_impact(mut self, impact: Impact) -> Self {
+    pub fn with_impact(&mut self, impact: Impact) -> &mut Self {
         self.impact = impact;
         self
     }
 
-    pub fn with_urgency(mut self, urgency: Urgency) -> Self {
+    pub fn with_urgency(&mut self, urgency: Urgency) -> &mut Self {
         self.urgency = urgency;
         self
     }
 
-    pub fn with_field(mut self, key: &str, value: Value) -> Self {
+    pub fn with_field(&mut self, key: &str, value: Value) -> &mut Self {
         self.fields.insert(key.to_string(), value);
         self
     }
 
-    pub fn with_text_field(self, key: &str, value: &str) -> Self {
+    pub fn with_text_field(&mut self, key: &str, value: &str) -> &mut Self {
         self.with_field(key, Value::String(value.to_string()))
     }
 
-    pub fn with_int_field(self, key: &str, value: i64) -> Self {
+    pub fn with_int_field(&mut self, key: &str, value: i64) -> &mut Self {
         self.with_field(key, Value::Int(value))
     }
 
-    pub fn with_float_field(self, key: &str, value: f64) -> Self {
+    pub fn with_float_field(&mut self, key: &str, value: f64) -> &mut Self {
         self.with_field(key, Value::Float(value))
     }
 
-    pub fn with_bool_field(self, key: &str, value: bool) -> Self {
+    pub fn with_bool_field(&mut self, key: &str, value: bool) -> &mut Self {
         self.with_field(key, Value::Bool(value))
     }
 
-    pub fn with_list_field(self, key: &str, value: Vec<Value>) -> Self {
+    pub fn with_list_field(&mut self, key: &str, value: Vec<Value>) -> &mut Self {
         self.with_field(key, Value::List(value))
     }
 
-    pub fn with_map_field(self, key: &str, value: HashMap<String, Value>) -> Self {
+    pub fn with_map_field(&mut self, key: &str, value: HashMap<String, Value>) -> &mut Self {
         self.with_field(key, Value::Map(value))
     }
 
-    pub fn build(self) -> Event {
+    pub fn build(&self) -> Event {
         let now = Utc::now();
         let event_id = Uuid::new_v7(Timestamp::from_unix(
             NoContext,
@@ -331,10 +366,10 @@ impl EventBuilder {
         Event {
             id: event_id,
             correlation_id: self.correlation_id,
-            source: self.source,
+            source: self.source.clone(),
             created_at: now,
             received_at,
-            fields: self.fields,
+            fields: self.fields.clone(),
             priority: self.priority,
             impact: self.impact,
             urgency: self.urgency,

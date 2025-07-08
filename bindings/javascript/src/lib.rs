@@ -232,21 +232,21 @@ impl JsEventBuilder {
     }
 
     #[napi]
-    pub fn with_priority(&mut self, priority: JsPriority) -> napi::Result<&Self> {
+    pub fn with_priority(&mut self, priority: JsPriority) -> &Self {
         self.inner.with_priority(priority.into());
-        Ok(self)
+        self
     }
 
     #[napi]
-    pub fn with_impact(&mut self, impact: JsImpact) -> napi::Result<&Self> {
+    pub fn with_impact(&mut self, impact: JsImpact) -> &Self {
         self.inner.with_impact(impact.into());
-        Ok(self)
+        self
     }
 
     #[napi]
-    pub fn with_urgency(&mut self, urgency: JsUrgency) -> napi::Result<&Self> {
+    pub fn with_urgency(&mut self, urgency: JsUrgency) -> &Self {
         self.inner.with_urgency(urgency.into());
-        Ok(self)
+        self
     }
 
     #[napi]

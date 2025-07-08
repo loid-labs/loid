@@ -1,3 +1,1 @@
-pub struct Neuron {
-    
-}
+pub struct Neuron {}

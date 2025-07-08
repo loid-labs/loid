@@ -1,5 +1,5 @@
-use sqlx::{Executor, Pool, Postgres};
 use crate::database::base::SQLResource;
+use sqlx::{Executor, Pool, Postgres};
 
 pub struct PostgresResource {
     pool: Pool<Postgres>,

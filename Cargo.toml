@@ -51,5 +51,5 @@ sqlx = { version = "0.8", features = [ "runtime-tokio", "tls-rustls-ring-native-
 reqwest = { version = "0.12", features = ["json"] }
 
 # Dev dependencies
-testcontainers = { version = "0.24.0", features = ["default"] }
+testcontainers = { version = "0.25.0", features = ["default"] }
 testcontainers-modules = { version = "0.12.1", features = ["postgres"] }

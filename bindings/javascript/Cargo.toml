@@ -11,7 +11,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 napi = { version = "2.12.2", features = ["napi4", "chrono_date"] }
-napi-derive = "2.12.2"
+napi-derive = "3.2.4"
 chrono.workspace = true
 uuid.workspace = true
 loid-events.workspace = true

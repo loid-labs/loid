@@ -26,7 +26,7 @@ jobs:
 
       # Cache Rust toolchain
       - name: Cache Rust toolchain
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.rustup/toolchains
@@ -41,7 +41,7 @@ jobs:
 
       # Cache Cargo registry and git dependencies
       - name: Cache Cargo registry
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cargo/registry/index/
@@ -53,7 +53,7 @@ jobs:
 
       # Cache target directory (build artifacts)
       - name: Cache target directory
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: target/
           key: ${{ runner.os }}-cargo-build-${{ hashFiles('**/Cargo.lock') }}-${{ hashFiles('**/*.rs') }}
@@ -63,7 +63,7 @@ jobs:
 
       # Cache installed cargo tools
       - name: Cache cargo tools
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cargo-tools-cache
         with:
           path: ~/.cargo/bin/
@@ -82,7 +82,7 @@ jobs:
 
       # Cache DeepSource CLI
       - name: Cache DeepSource CLI
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: deepsource-cache
         with:
           path: ./bin/deepsource

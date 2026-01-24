@@ -31,9 +31,9 @@ loid-transport = { path = "crates/transport" }
 loid-sensors = { path = "crates/sensors" }
 loid-neurons = { path = "crates/neurons" }
 loid-resources = { path = "crates/resources" }
+loid-events = { path = "crates/events" }
 
 # Dependencies
-loid-events = { path = "crates/events" }
 tokio = { version = "1.45.0", features = ["full"] }
 tokio-cron-scheduler = "0.14.0"
 tonic = "0.13.1"

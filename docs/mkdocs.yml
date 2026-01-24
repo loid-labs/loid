@@ -24,6 +24,7 @@ theme:
     - content.code.select
     - content.code.annotate
     - content.tooltips
+    - content.tabs.link
     - navigation.footer
     - navigation.indexes
     - navigation.path
@@ -87,6 +88,7 @@ plugins:
   - tags:
   - blog:
   - minify_html:
+  - include-markdown:
 
 extra:
   social:

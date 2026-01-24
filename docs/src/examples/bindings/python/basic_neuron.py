@@ -1,6 +1,6 @@
-from loid import Event, Neuron, DefaultAgent
+from loid import Event, Neuron, Agent
 
-neuron: Neuron = DefaultAgent.neuron(
+neuron: Neuron = Agent.default().neuron(
     name="Server Status Check",
     description="Checks the status of the server",
 )

@@ -1,1 +1,1 @@
-pub use crate::models::{Neuron};
+pub use crate::models::Neuron;
